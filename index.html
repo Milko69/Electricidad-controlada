@@ -3,9 +3,11 @@
 <head>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // ESTA ES LA CONEXIÓN CORREGIDA SEGÚN TUS FOTOS
+  // URL confirmada
   const SB_URL = "https://powkyikeyoghogpzfrpk.supabase.co"; 
-  const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tdm9rc3lsa2Jpbmh4a2RvbWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyNjYxMDgsImV4cCI6MjA4NDg0MjEwOH0.t61ChuadD-BeYd95l69G7wMtj5Asn9CJT9IJqMXwTxQ"; 
+  
+  // ESTA ES LA NUEVA CLAVE QUE APARECE EN TU PANEL
+  const SB_KEY = "sb_publishable_820D8CpALrBZJtxbCC5ASg_RgIfdXpv"; 
   
   const _supabase = window.supabase.createClient(SB_URL, SB_KEY);
 
@@ -15,7 +17,6 @@
       feedback.textContent = "Verificando...";
 
       try {
-          // Buscamos en tu tabla 'clientes'
           const { data, error } = await _supabase
               .from('clientes')
               .select('*')
@@ -28,19 +29,19 @@
               if (cliente.suscripcion_activa) {
                   document.getElementById('loginOverlay').style.display = 'none';
               } else {
-                  // Tu requisito: Si no paga, solo ve la lista básica
+                  // Si no pagó la cuota mensual:
                   document.getElementById('loginOverlay').style.display = 'none';
                   document.querySelectorAll('.tab-btn').forEach(btn => {
                       if (btn.innerText !== 'Clientes') btn.style.display = 'none';
                   });
-                  alert("Suscripción pendiente de pago.");
+                  alert("Suscripción vencida. Acceso limitado a lista de clientes.");
               }
           } else {
               feedback.textContent = "Código no válido.";
           }
       } catch (err) {
           console.error(err);
-          feedback.textContent = "Error de comunicación con el servidor.";
+          feedback.textContent = "Error: Verifica la conexión o la configuración de la tabla.";
       }
   }
 </script>
