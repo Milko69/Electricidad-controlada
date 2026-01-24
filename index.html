@@ -1034,7 +1034,7 @@
                 const { data, error } = await supabase
                     .from('clientes')
                     .select('*')
-                    .eq('codigo_acceso', codigo)
+                    .eq(''clave_cliente'', codigo)
                     .single();
 
                 if (data) {
