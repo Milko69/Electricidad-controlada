@@ -1088,12 +1088,12 @@
                     errorMsg.style.display = 'block';
                     errorMsg.innerText = "Código incorrecto o no registrado.";
                 }
-            } catch (err) {
-                console.log("Error de conexión:", err);
-                errorMsg.innerText = "Error de comunicación con el servidor.";
-                errorMsg.style.display = 'block';
-            }
-        }
+          } catch (err) {
+          console.error("Detalle:", err);
+          // Esto te dirá el error REAL en la pantalla (Ej: "Columna no existe")
+          feedback.textContent = "FALLO REAL: " + (err.message || "Error desconocido");
+          feedback.style.color = "red";
+      }
         window.onload = loadData;
     </script>
 </body>
