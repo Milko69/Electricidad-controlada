@@ -1023,25 +1023,41 @@
         }
 
         window.onload = loadData;
-        function validarIngreso() {
-            // 1. Buscamos lo que escribiste en el cuadro
+        async function validarIngreso() {
             const cuadro = document.getElementById('access-code');
             const codigo = cuadro.value;
-            
-            // 2. Buscamos el cartel de error y la pantalla oscura
             const errorMsg = document.getElementById('login-error');
             const pantallaCierre = document.getElementById('login-overlay');
 
-            // 3. La lógica: Si el código es correcto, escondemos la pantalla
-            if (codigo === "ADMIN2026") { 
-                pantallaCierre.style.display = 'none';
-            } else {
-                // Si está mal, mostramos el texto rojo
+            try {
+                // Consultamos a Supabase si el código existe
+                const { data, error } = await supabase
+                    .from('clientes')
+                    .select('*')
+                    .eq('codigo_acceso', codigo)
+                    .single();
+
+                if (data) {
+                    if (data.suscripcion_activa === true) {
+                        // SI PAGÓ: Entra normal
+                        pantallaCierre.style.display = 'none';
+                    } else {
+                        // NO PAGÓ: Acceso limitado (Solo lista básica)
+                        alert("Suscripción vencida. Solo disponible lista de clientes.");
+                        pantallaCierre.style.display = 'none';
+                        // Aquí bloquearemos el resto de la app luego
+                    }
+                } else {
+                    // El código no está en tu base de datos
+                    errorMsg.style.display = 'block';
+                }
+            } catch (err) {
+                console.log("Error de conexión:", err);
+                errorMsg.innerText = "Error de conexión con la base de datos.";
                 errorMsg.style.display = 'block';
             }
         }
 
-        // El motor de carga de datos va aquí al final una sola vez
         window.onload = loadData;
     </script>
 </body>
