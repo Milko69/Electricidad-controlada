@@ -1014,8 +1014,26 @@
         }
 
         window.onload = loadData;
-        function validarIngreso() { const codigo = document.getElementById('access-code').value; const errorMsg = document.getElementById('login-error'); if (codigo === "ADMIN2026") { document.getElementById('login-overlay').style.display = 'none'; } else if (codigo === "BASICO") { document.getElementById('login-overlay').style.display = 'none'; alert("Modo Básico: Solo listado de clientes."); // Aquí bloquearemos el resto después } else { errorMsg.style.display = 'block'; } }
+        function validarIngreso() {
+            // 1. Buscamos lo que escribiste en el cuadro
+            const cuadro = document.getElementById('access-code');
+            const codigo = cuadro.value;
+            
+            // 2. Buscamos el cartel de error y la pantalla oscura
+            const errorMsg = document.getElementById('login-error');
+            const pantallaCierre = document.getElementById('login-overlay');
 
+            // 3. La lógica: Si el código es correcto, escondemos la pantalla
+            if (codigo === "ADMIN2026") { 
+                pantallaCierre.style.display = 'none';
+            } else {
+                // Si está mal, mostramos el texto rojo
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        // El motor de carga de datos va aquí al final una sola vez
+        window.onload = loadData;
     </script>
 </body>
 </html>
