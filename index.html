@@ -3,43 +3,51 @@
 <head>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+  // Añadimos un parámetro al final de la URL para saltar el cache
   const SB_URL = "https://powkyikeyoghogpzfrpk.supabase.co"; 
   const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tdm9rc3lsa2Jpbmh4a2RvbWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyNjYxMDgsImV4cCI6MjA4NDg0MjEwOH0.t61ChuadD-BeYd95l69G7wMtj5Asn9CJT9IJqMXwTxQ"; 
-  const _supabase = window.supabase.createClient(SB_URL, SB_KEY);
+  
+  const _supabase = window.supabase.createClient(SB_URL, SB_KEY, {
+    auth: { persistSession: false } 
+  });
 
   async function validarAcceso() {
       const input = document.getElementById('accessCode').value.trim();
       const feedback = document.getElementById('loginFeedback');
       
-      feedback.textContent = "Buscando en la base de datos...";
+      feedback.textContent = "Conectando con el servidor...";
 
       try {
-          // Usamos 'select' simple sin '.single()' para evitar errores estrictos
-          const { data, error } = await _supabase
+          // Consultamos directamente la tabla que creaste
+          const { data, error, status } = await _supabase
               .from('clientes')
               .select('clave_cliente, suscripcion_activa')
               .eq('clave_cliente', input);
 
-          if (error) throw error;
+          if (error) {
+              console.error("Detalle del error:", error);
+              feedback.textContent = "Error del servidor: " + error.message;
+              return;
+          }
 
           if (data && data.length > 0) {
               const cliente = data[0];
-              if (cliente.suscripcion_activa === true) {
+              if (cliente.suscripcion_activa) {
                   document.getElementById('loginOverlay').style.display = 'none';
-                  alert("¡Acceso concedido!");
+                  alert("Acceso Total Confirmado");
               } else {
-                  // Tu lógica de cobro: si no pagó, solo ve la lista
+                  // Lógica de pago pendiente
                   document.getElementById('loginOverlay').style.display = 'none';
-                  document.getElementById('nav-finance').style.removeProperty('display'); 
-                  document.getElementById('nav-finance').style.display = 'none';
-                  alert("Suscripción vencida. Solo lista de clientes disponible.");
+                  // Ocultamos pestañas de pago (IVA, Finanzas)
+                  const tabs = document.querySelectorAll('.tab-btn');
+                  tabs.forEach(t => { if(t.innerText !== 'Clientes') t.style.display = 'none'; });
+                  alert("Suscripción vencida. Solo lista de clientes.");
               }
           } else {
-              feedback.textContent = "Código '" + input + "' no encontrado.";
+              feedback.textContent = "El código '" + input + "' no existe en la base de datos.";
           }
       } catch (err) {
-          console.error("Error completo:", err);
-          feedback.textContent = "Error: " + (err.message || "No se pudo conectar");
+          feedback.textContent = "Error de red. Revisa tu conexión.";
       }
   }
 </script>
