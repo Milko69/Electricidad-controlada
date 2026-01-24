@@ -1030,34 +1030,35 @@
             const pantallaCierre = document.getElementById('login-overlay');
 
             try {
-                // Consultamos a Supabase si el código existe
+                // Consultamos a Supabase usando el nombre exacto de tu nueva columna
                 const { data, error } = await supabase
                     .from('clientes')
                     .select('*')
-                    .eq(''clave_cliente'', codigo)
+                    .eq('clave_cliente', codigo) 
                     .single();
 
                 if (data) {
                     if (data.suscripcion_activa === true) {
                         // SI PAGÓ: Entra normal
                         pantallaCierre.style.display = 'none';
+                        console.log("Acceso concedido");
                     } else {
-                        // NO PAGÓ: Acceso limitado (Solo lista básica)
-                        alert("Suscripción vencida. Solo disponible lista de clientes.");
+                        // NO PAGÓ: Solo funcionalidad básica (instrucción del 23-01-2026)
+                        alert("Suscripción vencida. Solo disponible lista de clientes básica.");
                         pantallaCierre.style.display = 'none';
-                        // Aquí bloquearemos el resto de la app luego
+                        // Aquí puedes agregar lógica para ocultar botones de edición
                     }
                 } else {
-                    // El código no está en tu base de datos
+                    // El código no existe en la base de datos
                     errorMsg.style.display = 'block';
+                    errorMsg.innerText = "Código incorrecto o no registrado.";
                 }
             } catch (err) {
                 console.log("Error de conexión:", err);
-                errorMsg.innerText = "Error de conexión con la base de datos.";
+                errorMsg.innerText = "Error de comunicación con el servidor.";
                 errorMsg.style.display = 'block';
             }
         }
-
         window.onload = loadData;
     </script>
 </body>
