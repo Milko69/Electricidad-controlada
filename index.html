@@ -2,51 +2,13 @@
 <html lang="es">
 <head>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-      const SB_URL = "https://powkyikeyoghogpzfrpk.supabase.co"; 
-      const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tdm9rc3lsa2Jpbmh4a2RvbWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyNjYxMDgsImV4cCI6MjA4NDg0MjEwOH0.t61ChuadD-BeYd95l69G7wMtj5Asn9CJT9IJqMXwTxQ"; 
-      const supabase = window.supabase.createClient(SB_URL, SB_KEY);
-
-      // FUNCIÓN DE ACCESO CORREGIDA
-      async function validarAcceso() {
-          const codigo = document.getElementById('accessCode').value.trim();
-          const feedback = document.getElementById('loginFeedback');
-          
-          if (!codigo) return;
-          
-          feedback.textContent = "Conectando...";
-
-          try {
-              // Buscamos en la tabla 'clientes' que acabas de crear
-              const { data, error } = await supabase
-                  .from('clientes')
-                  .select('*')
-                  .eq('clave_cliente', codigo)
-                  .single();
-
-              if (error || !data) {
-                  feedback.textContent = "Código no encontrado";
-                  return;
-              }
-
-              if (data.suscripcion_activa) {
-                  // ACCESO TOTAL
-                  document.getElementById('loginOverlay').style.display = 'none';
-                  alert("Bienvenido, suscripción activa.");
-              } else {
-                  // SOLO LISTA BÁSICA (Tu requisito de suscripción)
-                  document.getElementById('loginOverlay').style.display = 'none';
-                  // Bloqueamos las otras pestañas
-                  document.getElementById('nav-finance').style.display = 'none';
-                  document.getElementById('nav-iva').style.display = 'none';
-                  alert("Suscripción vencida. Solo modo consulta de clientes.");
-              }
-          } catch (err) {
-              console.error(err);
-              feedback.textContent = "Error de comunicación con el servidor";
-          }
-      }
-    </script>
+<script>
+  // ESTA ES LA COMBINACIÓN CORRECTA
+  const SB_URL = "https://powkyikeyoghogpzfrpk.supabase.co"; 
+  const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tdm9rc3lsa2Jpbmh4a2RvbWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyNjYxMDgsImV4cCI6MjA4NDg0MjEwOH0.t61ChuadD-BeYd95l69G7wMtj5Asn9CJT9IJqMXwTxQ"; 
+  
+  const supabase = window.supabase.createClient(SB_URL, SB_KEY);
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ElectroGestión Pro - Full Finance + IVA</title>
