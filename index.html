@@ -1,55 +1,49 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  // URL confirmada
-  const SB_URL = "https://powkyikeyoghogpzfrpk.supabase.co"; 
-  
-  // ESTA ES LA NUEVA CLAVE QUE APARECE EN TU PANEL
-  const SB_KEY = "sb_publishable_820D8CpALrBZJtxbCC5ASg_RgIfdXpv"; 
-  
-  const _supabase = window.supabase.createClient(SB_URL, SB_KEY);
-
-  async function validarAcceso() {
-      const input = document.getElementById('accessCode').value.trim();
-      const feedback = document.getElementById('loginFeedback');
-      feedback.textContent = "Verificando...";
-
-      try {
-          const { data, error } = await _supabase
-              .from('clientes')
-              .select('*')
-              .eq('clave_cliente', input);
-
-          if (error) throw error;
-
-          if (data && data.length > 0) {
-              const cliente = data[0];
-              if (cliente.suscripcion_activa) {
-                  document.getElementById('loginOverlay').style.display = 'none';
-              } else {
-                  // Si no pagó la cuota mensual:
-                  document.getElementById('loginOverlay').style.display = 'none';
-                  document.querySelectorAll('.tab-btn').forEach(btn => {
-                      if (btn.innerText !== 'Clientes') btn.style.display = 'none';
-                  });
-                  alert("Suscripción vencida. Acceso limitado a lista de clientes.");
-              }
-          } else {
-              feedback.textContent = "Código no válido.";
-          }
-      } catch (err) {
-          console.error(err);
-          feedback.textContent = "Error: Verifica la conexión o la configuración de la tabla.";
-      }
-  }
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ElectroGestión Pro - Full Finance + IVA</title>
-    <!-- Iconos -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Sistema Eléctrico Controlado</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SB_URL = "https://powkyikeyoghogpzfrpk.supabase.co"; 
+        const SB_KEY = "sb_publishable_820D8CpALrBZJtxbCC5ASg_RgIfdXpv"; 
+        const _supabase = window.supabase.createClient(SB_URL, SB_KEY);
+
+        async function validarAcceso() {
+            const input = document.getElementById('accessCode').value.trim();
+            const feedback = document.getElementById('loginFeedback');
+            feedback.textContent = "Verificando...";
+
+            try {
+                const { data, error } = await _supabase
+                    .from('clientes')
+                    .select('*')
+                    .eq('clave_cliente', input);
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    const cliente = data[0];
+                    if (cliente.suscripcion_activa) {
+                        document.getElementById('loginOverlay').style.display = 'none';
+                    } else {
+                        document.getElementById('loginOverlay').style.display = 'none';
+                        document.querySelectorAll('.tab-btn').forEach(btn => {
+                            if (btn.innerText !== 'Clientes') btn.style.display = 'none';
+                        });
+                        alert("Suscripción vencida. Acceso limitado.");
+                    }
+                } else {
+                    feedback.textContent = "Código no válido.";
+                }
+            } catch (err) {
+                feedback.textContent = "Error: " + err.message;
+            }
+        }
+    </script>
+
     <style>
         :root {
             --primary: #007bff;
