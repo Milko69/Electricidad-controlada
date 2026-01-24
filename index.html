@@ -3,51 +3,44 @@
 <head>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // Añadimos un parámetro al final de la URL para saltar el cache
+  // ESTA ES LA CONEXIÓN CORREGIDA SEGÚN TUS FOTOS
   const SB_URL = "https://powkyikeyoghogpzfrpk.supabase.co"; 
   const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tdm9rc3lsa2Jpbmh4a2RvbWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyNjYxMDgsImV4cCI6MjA4NDg0MjEwOH0.t61ChuadD-BeYd95l69G7wMtj5Asn9CJT9IJqMXwTxQ"; 
   
-  const _supabase = window.supabase.createClient(SB_URL, SB_KEY, {
-    auth: { persistSession: false } 
-  });
+  const _supabase = window.supabase.createClient(SB_URL, SB_KEY);
 
   async function validarAcceso() {
       const input = document.getElementById('accessCode').value.trim();
       const feedback = document.getElementById('loginFeedback');
-      
-      feedback.textContent = "Conectando con el servidor...";
+      feedback.textContent = "Verificando...";
 
       try {
-          // Consultamos directamente la tabla que creaste
-          const { data, error, status } = await _supabase
+          // Buscamos en tu tabla 'clientes'
+          const { data, error } = await _supabase
               .from('clientes')
-              .select('clave_cliente, suscripcion_activa')
+              .select('*')
               .eq('clave_cliente', input);
 
-          if (error) {
-              console.error("Detalle del error:", error);
-              feedback.textContent = "Error del servidor: " + error.message;
-              return;
-          }
+          if (error) throw error;
 
           if (data && data.length > 0) {
               const cliente = data[0];
               if (cliente.suscripcion_activa) {
                   document.getElementById('loginOverlay').style.display = 'none';
-                  alert("Acceso Total Confirmado");
               } else {
-                  // Lógica de pago pendiente
+                  // Tu requisito: Si no paga, solo ve la lista básica
                   document.getElementById('loginOverlay').style.display = 'none';
-                  // Ocultamos pestañas de pago (IVA, Finanzas)
-                  const tabs = document.querySelectorAll('.tab-btn');
-                  tabs.forEach(t => { if(t.innerText !== 'Clientes') t.style.display = 'none'; });
-                  alert("Suscripción vencida. Solo lista de clientes.");
+                  document.querySelectorAll('.tab-btn').forEach(btn => {
+                      if (btn.innerText !== 'Clientes') btn.style.display = 'none';
+                  });
+                  alert("Suscripción pendiente de pago.");
               }
           } else {
-              feedback.textContent = "El código '" + input + "' no existe en la base de datos.";
+              feedback.textContent = "Código no válido.";
           }
       } catch (err) {
-          feedback.textContent = "Error de red. Revisa tu conexión.";
+          console.error(err);
+          feedback.textContent = "Error de comunicación con el servidor.";
       }
   }
 </script>
