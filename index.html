@@ -1,13 +1,47 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // ESTA ES LA COMBINACIÓN CORRECTA
   const SB_URL = "https://powkyikeyoghogpzfrpk.supabase.co"; 
   const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tdm9rc3lsa2Jpbmh4a2RvbWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyNjYxMDgsImV4cCI6MjA4NDg0MjEwOH0.t61ChuadD-BeYd95l69G7wMtj5Asn9CJT9IJqMXwTxQ"; 
-  
-  const supabase = window.supabase.createClient(SB_URL, SB_KEY);
+  const _supabase = window.supabase.createClient(SB_URL, SB_KEY);
+
+  async function validarAcceso() {
+      const input = document.getElementById('accessCode').value.trim();
+      const feedback = document.getElementById('loginFeedback');
+      
+      feedback.textContent = "Buscando en la base de datos...";
+
+      try {
+          // Usamos 'select' simple sin '.single()' para evitar errores estrictos
+          const { data, error } = await _supabase
+              .from('clientes')
+              .select('clave_cliente, suscripcion_activa')
+              .eq('clave_cliente', input);
+
+          if (error) throw error;
+
+          if (data && data.length > 0) {
+              const cliente = data[0];
+              if (cliente.suscripcion_activa === true) {
+                  document.getElementById('loginOverlay').style.display = 'none';
+                  alert("¡Acceso concedido!");
+              } else {
+                  // Tu lógica de cobro: si no pagó, solo ve la lista
+                  document.getElementById('loginOverlay').style.display = 'none';
+                  document.getElementById('nav-finance').style.removeProperty('display'); 
+                  document.getElementById('nav-finance').style.display = 'none';
+                  alert("Suscripción vencida. Solo lista de clientes disponible.");
+              }
+          } else {
+              feedback.textContent = "Código '" + input + "' no encontrado.";
+          }
+      } catch (err) {
+          console.error("Error completo:", err);
+          feedback.textContent = "Error: " + (err.message || "No se pudo conectar");
+      }
+  }
 </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
